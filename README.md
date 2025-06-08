@@ -82,3 +82,20 @@ Al ejecutar `go test`, deberías observar el siguiente flujo en tu terminal:
 4.  La prueba confirma que los nombres de los contenedores son los esperados.
 5.  Finalmente, Terratest invoca a `terraform destroy` para eliminar los contenedores y limpiar el entorno.
 6.  La salida de la prueba mostrará **`PASS`**, indicando que todo funcionó correctamente.
+
+graph TD
+    subgraph "Máquina Local"
+        A[Usuario ejecuta 'go test'] --> B{Terratest};
+        B -->|1. terraform init & apply| C[Terraform Core];
+        C -->|2. Usa el provider de Docker| D[Docker Engine];
+        D -->|3. Crea Contenedor Nginx 1| E[Container Nginx 'web-server-1'];
+        D -->|4. Crea Contenedor Nginx 2| F[Container Nginx 'web-server-2'];
+        B -->|5. Realiza pruebas| G[Verifica contenedores vía API Docker];
+        G -->|6. OK/FAIL| B;
+        B -->|7. terraform destroy| C;
+        C -->|8. Elimina contenedores| D;
+    end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#ccf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
