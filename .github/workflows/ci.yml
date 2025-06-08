@@ -1,0 +1,35 @@
+name: "Terraform & Terratest CI"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: "Run Terratest"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Go"
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22' # Asegúrate que coincida con la versión de tu go.mod
+
+      - name: "Set up Terraform"
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.8.0" # O la versión que prefieras
+
+      - name: "Run Terratest"
+        working-directory: ./test
+        run: |
+          go mod init terraform-docker-modular-lab/test
+          go mod tidy
+          go test -v -timeout 30m

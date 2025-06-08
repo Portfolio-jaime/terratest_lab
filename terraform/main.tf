@@ -9,16 +9,10 @@ terraform {
 
 provider "docker" {}
 
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
-}
+module "nginx_servers" {
+  for_each = var.servers
+  source   = "../modules/nginx_container"
 
-resource "docker_container" "nginx_server" {
-  image = docker_image.nginx.image_id
-  name  = "tutorial"
-  ports {
-    internal = 80
-    external = 8080
-  }
+  container_name = each.key
+  external_port  = each.value.port
 }
