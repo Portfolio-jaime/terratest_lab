@@ -183,31 +183,29 @@ terratest_lab/
 ## 📈 Diagrama del Flujo
 
 ```mermaid
-graph TD
-    subgraph "Host"
-        V[VS Code con extensión Dev Containers]
-        V --> DC[Dev Container (entorno de desarrollo aislado)]
+flowchart TD
+    subgraph Host
+        VSCODE[VS Code con extensión Dev Containers]
+        VSCODE --> DEVCONTAINER[Dev Container]
     end
 
     subgraph "Dev Container"
-        DC --> A[Usuario ejecuta 'go test']
-        A --> B{Terratest}
-        B -->|1. terraform init & apply| C[Terraform Core]
-        C -->|2. Usa el provider de Docker| D[Docker Engine]
-        D -->|3. Crea Contenedor Nginx 1| E[Container Nginx 'web-server-1']
-        D -->|4. Crea Contenedor Nginx 2| F[Container Nginx 'web-server-2']
-        B -->|5. Realiza pruebas| G[Verifica contenedores vía API Docker]
-        G -->|6. OK/FAIL| B
-        B -->|7. terraform destroy| C
-        C -->|8. Elimina contenedores| D
+        DEVCONTAINER --> TEST[Usuario ejecuta 'go test']
+        TEST --> TERRATEST{Terratest}
+        TERRATEST -->|terraform init & apply| TF[Terraform Core]
+        TF -->|provider Docker| DOCKER[Docker Engine]
+        DOCKER --> NGINX1[Container Nginx web-server-1]
+        DOCKER --> NGINX2[Container Nginx web-server-2]
+        TERRATEST -->|pruebas HTTP| CHECK[Verifica contenedores]
+        TERRATEST -->|terraform destroy| TF
     end
-
-    style V fill:#ffe,stroke:#333,stroke-width:2px
-    style DC fill:#e0f7fa,stroke:#333,stroke-width:2px
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#ccf,stroke:#333,stroke-width:2px
-    style C fill:#bbf,stroke:#333,stroke-width:2px
 ```
+
+---
+
+Creado por  
+**Jaime A. Henao A.**  
+DevOps
 
 ---
 

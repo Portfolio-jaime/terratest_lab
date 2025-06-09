@@ -4,9 +4,23 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/README.md'
+      - '**/*.md'
+      - '**/docs/**'
+      - '**/.github/ISSUE_TEMPLATE/**'
+      - '**/.vscode/**'
+      - '**/.devcontainer/**'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**/README.md'
+      - '**/*.md'
+      - '**/docs/**'
+      - '**/.github/ISSUE_TEMPLATE/**'
+      - '**/.vscode/**'
+      - '**/.devcontainer/**'
 
 jobs:
   test:
