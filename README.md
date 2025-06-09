@@ -184,18 +184,26 @@ terratest_lab/
 
 ```mermaid
 graph TD
-    subgraph "Máquina Local"
-        A[Usuario ejecuta 'go test'] --> B{Terratest};
-        B -->|1. terraform init & apply| C[Terraform Core];
-        C -->|2. Usa el provider de Docker| D[Docker Engine];
-        D -->|3. Crea Contenedor Nginx 1| E[Container Nginx 'web-server-1'];
-        D -->|4. Crea Contenedor Nginx 2| F[Container Nginx 'web-server-2'];
-        B -->|5. Realiza pruebas| G[Verifica contenedores vía API Docker];
-        G -->|6. OK/FAIL| B;
-        B -->|7. terraform destroy| C;
-        C -->|8. Elimina contenedores| D;
+    subgraph "Host"
+        V[VS Code con extensión Dev Containers]
+        V --> DC[Dev Container (entorno de desarrollo aislado)]
     end
 
+    subgraph "Dev Container"
+        DC --> A[Usuario ejecuta 'go test']
+        A --> B{Terratest}
+        B -->|1. terraform init & apply| C[Terraform Core]
+        C -->|2. Usa el provider de Docker| D[Docker Engine]
+        D -->|3. Crea Contenedor Nginx 1| E[Container Nginx 'web-server-1']
+        D -->|4. Crea Contenedor Nginx 2| F[Container Nginx 'web-server-2']
+        B -->|5. Realiza pruebas| G[Verifica contenedores vía API Docker]
+        G -->|6. OK/FAIL| B
+        B -->|7. terraform destroy| C
+        C -->|8. Elimina contenedores| D
+    end
+
+    style V fill:#ffe,stroke:#333,stroke-width:2px
+    style DC fill:#e0f7fa,stroke:#333,stroke-width:2px
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#ccf,stroke:#333,stroke-width:2px
     style C fill:#bbf,stroke:#333,stroke-width:2px
