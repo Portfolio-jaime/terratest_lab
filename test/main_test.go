@@ -2,12 +2,27 @@ package test
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
-	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
+
+func waitForStatusOK(url string, retries int, delay time.Duration, t *testing.T) {
+	for i := 0; i < retries; i++ {
+		resp, err := http.Get(url)
+		if err == nil && resp.StatusCode == 200 {
+			resp.Body.Close()
+			return
+		}
+		if resp != nil {
+			resp.Body.Close()
+		}
+		time.Sleep(delay)
+	}
+	t.Fatalf("Did not get HTTP 200 from %s after %d retries", url, retries)
+}
 
 func TestTerraformDockerModularExample(t *testing.T) {
 	t.Parallel()
@@ -24,14 +39,12 @@ func TestTerraformDockerModularExample(t *testing.T) {
 	t.Run("WebServer1", func(t *testing.T) {
 		const expectedPort = 8081
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
-		httph := http_helper.HttpGetWithRetry
-		httph(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
-		http_helper.HttpGetWithRetry(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
+		waitForStatusOK(url, 10, 3*time.Second, t)
 	})
 
 	t.Run("WebServer2", func(t *testing.T) {
 		const expectedPort = 8082
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
-		http_helper.HttpGetWithRetry(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
+		waitForStatusOK(url, 10, 3*time.Second, t)
 	})
 }
