@@ -1,0 +1,39 @@
+{
+  "name": "terratest_lab",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "terratest_lab",
+  "workspaceFolder": "/go/src/app",
+  "features": {
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "enabled": true,
+      "kubectlVersion": "latest",
+      "helmVersion": "latest",
+      "kindVersion": "latest",
+      "minikubeVersion": "latest",
+      "minikubeDriver": "docker"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "go.useLanguageServer": true,
+        "go.toolsEnvVars": {
+          "GO111MODULE": "on"
+        }
+      },
+      "extensions": [
+        "golang.go",
+        "ms-vscode.go",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "remoteUser": "arheanja",
+  "runServices": [],
+  "shutdownAction": "none",
+  "mounts": [
+    "type=bind,source=${env:HOME}/.ssh,target=/home/arheanja/.ssh"
+  ],
+  "postStartCommand": "sudo chown -R arheanja:arheanja /home/arheanja/.cache /home/arheanja/.ssh && chmod 700 /home/arheanja/.ssh && chmod 600 /home/arheanja/.ssh/* || true"
+}

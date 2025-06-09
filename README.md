@@ -24,13 +24,46 @@ La configuración es modular, lo que permite reutilizar y gestionar los componen
 
 ---
 
+## 🐳 Implementación con Dev Container
+
+Este proyecto incluye una configuración lista para usar con [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers).  
+Esto te permite desarrollar y probar en un entorno reproducible, con todas las herramientas necesarias preinstaladas (Go, Docker, Terraform, kubectl, Helm, Minikube, etc).
+
+### ¿Cómo usar el Dev Container?
+
+1. **Abre el proyecto en VS Code.**
+2. Si tienes la extensión "Dev Containers" instalada, VS Code te sugerirá "Reopen in Container". Haz clic ahí.
+3. Espera a que se construya el contenedor (esto puede tardar la primera vez).
+4. ¡Listo! Ya puedes correr todos los comandos y pruebas dentro del entorno aislado.
+
+**Ventajas:**
+- Docker-in-Docker ya está configurado, puedes usar `docker` directamente.
+- Incluye kubectl, Helm y Minikube para pruebas de Kubernetes.
+- El usuario y permisos están preconfigurados para desarrollo.
+
+**Ejemplo de comandos útiles dentro del devcontainer:**
+```bash
+go test -v
+docker ps
+kubectl version
+minikube status
+```
+
+**Abrir Nginx en tu navegador desde el devcontainer:**
+```bash
+$BROWSER http://localhost:8081
+```
+
+---
+
 ## 🚀 Guía de Implementación
 
 ### Requisitos Previos
 
 - [Docker](https://www.docker.com/products/docker-desktop)
-- [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- [Go (versión 1.18+)](https://golang.org/doc/install)
+- [Visual Studio Code](https://code.visualstudio.com/) + [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (opcional si usas el devcontainer)
+- [Go (versión 1.18+)](https://golang.org/doc/install) (opcional si usas el devcontainer)
 
 ### Pasos para la Ejecución
 
@@ -40,14 +73,15 @@ La configuración es modular, lo que permite reutilizar y gestionar los componen
     cd terraform-docker-modular-lab
     ```
 
-2. **Inicializa el módulo de Go:**
+2. **Abre el proyecto en VS Code y entra al Dev Container.**
+
+3. **Inicializa el módulo de Go (solo la primera vez):**
     ```bash
     cd test
-    go mod init terraform-docker-modular-lab/test
     go mod tidy
     ```
 
-3. **Ejecuta las pruebas:**
+4. **Ejecuta las pruebas:**
     ```bash
     go test -v
     ```
@@ -97,6 +131,53 @@ Al ejecutar `go test`, deberías observar el siguiente flujo en tu terminal:
 - **Variables o archivos faltantes:**  
   Si falta `terraform.tfvars` o alguna variable obligatoria, Terraform fallará. Solución: revisa que todos los archivos requeridos estén presentes.
 
+- **Problemas con Go Modules:**  
+  Si ves errores de dependencias, ejecuta `go mod tidy` en el directorio `test`.
+
+- **Problemas en CI/CD:**  
+  Si tu pipeline falla, revisa que el runner tenga Docker y permisos para crear contenedores.
+
+---
+
+## 🧪 Ejemplo de Personalización
+
+¿Quieres agregar más servidores o cambiar los puertos?  
+Edita el archivo [`terraform/terraform.tfvars`](terraform/terraform.tfvars):
+
+```hcl
+servers = {
+  "web-server-1" = { port = 8081 }
+  "web-server-2" = { port = 8082 }
+  "web-server-3" = { port = 8083 } # Nuevo servidor
+}
+```
+
+---
+
+## 📦 Estructura del Proyecto
+
+```
+terratest_lab/
+├── modules/
+│   └── nginx_container/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── terraform.tfvars
+├── test/
+│   ├── main_test.go
+│   └── go.mod
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── .devcontainer/
+│   ├── devcontainer.json
+│   ├── docker-compose.yml
+│   └── Dockerfile
+├── README.md
+└── ...
+```
+
 ---
 
 ## 📈 Diagrama del Flujo
@@ -119,5 +200,42 @@ graph TD
     style B fill:#ccf,stroke:#333,stroke-width:2px
     style C fill:#bbf,stroke:#333,stroke-width:2px
 ```
+
+---
+
+## 📚 Recursos Útiles
+
+- [Documentación de Terraform](https://www.terraform.io/docs)
+- [Terratest Examples](https://github.com/gruntwork-io/terratest/tree/master/examples)
+- [Documentación de Docker](https://docs.docker.com/)
+- [Go Modules](https://blog.golang.org/using-go-modules)
+- [Dev Containers](https://containers.dev/)
+
+---
+
+## 🙋‍♂️ Preguntas Frecuentes
+
+**¿Puedo usar otros contenedores además de Nginx?**  
+Sí, solo adapta el módulo y las variables para la imagen que desees.
+
+**¿Puedo correr esto en Windows/Mac?**  
+Sí, siempre que tengas Docker, Go y Terraform instalados, o uses el Dev Container.
+
+**¿Cómo abro la web de Nginx desde el contenedor dev?**  
+Usa:  
+```bash
+$BROWSER http://localhost:8081
+```
+o  
+```bash
+$BROWSER http://localhost:8082
+```
+
+---
+
+## 📝 Licencia
+
+MIT License.  
+¡Úsalo, modifícalo y comparte!
 
 ---
