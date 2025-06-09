@@ -1,0 +1,36 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Terratest Go build/test artifacts
+/test/.gocache/
+test/bin/
+*.out
+
+# Go modules
+/test/go.sum
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Ignore sensitive files
+*.tfvars
+*.env
+
+# SSH keys (no subir nunca llaves privadas)
+/.devcontainer/ssh/id_rsa
+/devcontainer/ssh/id_rsa.pub
+/home/vscode/.ssh/id_rsa
+/home/vscode/.ssh/id_rsa.pub

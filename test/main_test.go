@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	// --- DEPENDENCIAS NECESARIAS ---
+	"github.com/gruntwork-io/terratest/modules/http-helper" // <-- 1. Importación añadida
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
@@ -28,7 +30,7 @@ func TestTerraformDockerModularExample(t *testing.T) {
 
 	// Pruebas para el primer servidor web
 	t.Run("WebServer1", func(t *testing.T) {
-		const expectedName = "web-server-1"
+		// const expectedName = "web-server-1" // <-- 2. Eliminado porque no se usa
 		const expectedPort = 8081
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
 
@@ -38,7 +40,7 @@ func TestTerraformDockerModularExample(t *testing.T) {
 
 	// Pruebas para el segundo servidor web
 	t.Run("WebServer2", func(t *testing.T) {
-		const expectedName = "web-server-2"
+		// const expectedName = "web-server-2" // <-- 2. Eliminado porque no se usa
 		const expectedPort = 8082
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
 
