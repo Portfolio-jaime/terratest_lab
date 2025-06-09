@@ -27,9 +27,15 @@ jobs:
         with:
           terraform_version: "1.8.0" # O la versión que prefieras
 
-      - name: "Run Terratest"
-        working-directory: ./test
+      - name: Init Go module if needed
         run: |
-          go mod init terraform-docker-modular-lab/test
+          if [ ! -f go.mod ]; then
+            go mod init terraform-docker-modular-lab/test
+          fi
           go mod tidy
+        working-directory: ./terratest_lab/test
+
+      - name: "Run Terratest"
+        working-directory: ./terratest_lab/test
+        run: |
           go test -v -timeout 30m
