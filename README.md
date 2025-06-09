@@ -54,29 +54,13 @@ La configuración es modular, lo que permite reutilizar y gestionar los componen
 
 ---
 
-## 🔄 Flujo del Pipeline
+## 🧑‍💻 Guía para Implementar en tu Proyecto
 
-El workflow se activa con cada `push` o `pull request` a la rama `main` y realiza los siguientes pasos en un entorno limpio de GitHub:
-
-1. **Configuración del Entorno:**
-    - Prepara una máquina virtual con Ubuntu.
-    - Descarga el código del repositorio.
-    - Instala las versiones correctas de Go y Terraform.
-
-2. **Ejecución de Pruebas:**
-    - Navega al directorio `/test`.
-    - Ejecuta `go test`. Este comando le ordena a Terratest que:
-        1. Invoque `terraform apply` para crear los contenedores Docker definidos en el directorio `/terraform`.
-        2. Realice las pruebas unitarias escritas en Go (verificar que los servidores responden).
-        3. Invoque `terraform destroy` para limpiar todos los recursos, sin importar si las pruebas tuvieron éxito o fallaron.
-
----
-
-## ⚙️ ¿Cómo funciona?
-
-Cuando se activa el workflow, puedes ir a la pestaña **"Actions"** de tu repositorio de GitHub para ver la ejecución en tiempo real. Si todos los pasos se completan con éxito, verás una marca de verificación verde ✅. Si alguna prueba falla, verás una cruz roja ❌, lo que te permitirá saber que tus cambios han roto la infraestructura sin necesidad de probarlos manualmente.
-
-Este ciclo automatizado asegura que cada cambio en el código de Terraform sea validado, aumentando la confianza y la estabilidad de la infraestructura.
+1. **Copia la estructura de carpetas** (`terraform`, `test`, etc.) a tu repositorio.
+2. **Adapta los módulos de Terraform** según tus necesidades (puertos, imágenes, variables).
+3. **Modifica o agrega pruebas en Go** en el directorio `test` para validar los recursos que implementes.
+4. **Ejecuta las pruebas localmente** con `go test -v` antes de hacer push.
+5. **Integra el flujo en tu CI/CD** (GitHub Actions, GitLab CI, etc.) para validar cada cambio automáticamente.
 
 ---
 
@@ -89,9 +73,29 @@ Al ejecutar `go test`, deberías observar el siguiente flujo en tu terminal:
     - `web-server-1` expuesto en el puerto `8081`.
     - `web-server-2` expuesto en el puerto `8082`.
 3. Terratest realiza una petición HTTP a `http://localhost:8081` y `http://localhost:8082` para verificar que los servidores Nginx responden correctamente.
+   - **La validación solo comprueba que el código de estado HTTP sea 200, sin importar el contenido del body.**
 4. La prueba confirma que los nombres de los contenedores son los esperados.
 5. Finalmente, Terratest invoca a `terraform destroy` para eliminar los contenedores y limpiar el entorno.
 6. La salida de la prueba mostrará **`PASS`**, indicando que todo funcionó correctamente.
+
+---
+
+## ❌ Casos Comunes de Error
+
+- **Docker no está corriendo:**  
+  El test fallará con errores de conexión. Solución: asegúrate de que el servicio Docker esté activo (`sudo systemctl start docker` o abre Docker Desktop).
+
+- **El puerto ya está en uso:**  
+  Si tienes otro servicio usando el puerto 8081 o 8082, Terraform fallará al crear el contenedor. Solución: libera los puertos o cambia los valores en las variables de Terraform.
+
+- **No tienes permisos para usar Docker:**  
+  Verás errores de permisos. Solución: agrega tu usuario al grupo `docker` o ejecuta con `sudo`.
+
+- **Fallo en la prueba HTTP:**  
+  Si el contenedor Nginx no inicia correctamente, la prueba de Terratest fallará tras varios reintentos. Solución: revisa los logs del contenedor con `docker logs <container_id>`.
+
+- **Variables o archivos faltantes:**  
+  Si falta `terraform.tfvars` o alguna variable obligatoria, Terraform fallará. Solución: revisa que todos los archivos requeridos estén presentes.
 
 ---
 
@@ -115,3 +119,5 @@ graph TD
     style B fill:#ccf,stroke:#333,stroke-width:2px
     style C fill:#bbf,stroke:#333,stroke-width:2px
 ```
+
+---
