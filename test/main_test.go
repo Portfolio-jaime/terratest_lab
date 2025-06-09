@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gruntwork-io/terratest/modules/http-helper"
-	"github.comcom/gruntwork-io/terratest/modules/terraform"
+	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 func TestTerraformDockerModularExample(t *testing.T) {
@@ -24,14 +24,14 @@ func TestTerraformDockerModularExample(t *testing.T) {
 	t.Run("WebServer1", func(t *testing.T) {
 		const expectedPort = 8081
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
-		// --- CAMBIO AQUÍ ---
+		httph := http_helper.HttpGetWithRetry
+		httph(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
 		http_helper.HttpGetWithRetry(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
 	})
 
 	t.Run("WebServer2", func(t *testing.T) {
 		const expectedPort = 8082
 		url := fmt.Sprintf("http://localhost:%d", expectedPort)
-		// --- CAMBIO AQUÍ ---
 		http_helper.HttpGetWithRetry(t, url, nil, 200, "Welcome to nginx!", 10, 3*time.Second)
 	})
 }
